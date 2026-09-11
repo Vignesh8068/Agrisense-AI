@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AgriSense AI — Region-aware precision farming and data aggregation operating system for agritech.">
+  <title>AgriSense AI — Smarter Farming. Better Decisions.</title>
+  
+  <!-- Modern Typography & Monospace for Agronomic Telemetry -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Tamil:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Initial Application Startup Loading Screen (Required by Section 7) -->
+  <div id="app-initial-loader" class="initial-loading-screen" aria-live="polite">
+    <div class="loader-content-box">
+      <div class="loader-logo-ring">
+        <span class="animated-icon-seed">🌱</span>
+        <span class="animated-icon-crop">🌾</span>
+        <span class="animated-icon-ai">✨</span>
+      </div>
+      <h2 class="loader-brand-title">AgriSense <span class="brand-accent">AI</span></h2>
+      <p class="loader-status-text" id="loader-status-msg">Initializing AgriSense Intelligence...</p>
+      <div class="loader-progress-track">
+        <div class="loader-progress-fill" id="loader-progress-bar"></div>
+      </div>
+      <span class="loader-subtext">Grounding agroclimatic datasets & IMD telemetry...</span>
+    </div>
+  </div>
+
+  <!-- Accessibility Skip Navigation -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
+  <!-- Low Bandwidth Notification Banner -->
+  <aside id="low-bandwidth-banner" class="data-saver-banner hidden" role="status" aria-live="polite">
+    <div class="banner-inner">
+      <span class="banner-icon">⚡</span>
+      <span data-i18n="lowBandwidthActive">Low-Bandwidth (Text-Only) Mode Active: Heavy styling, shadows, and animations stripped for rural 2G/3G connectivity.</span>
+    </div>
+  </aside>
+
+  <!-- Toast Notification System -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Command Palette Modal (Ctrl + K) -->
+  <div id="command-palette-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Command Palette">
+    <div class="command-palette-box">
+      <div class="cp-input-row">
+        <span class="cp-icon">🔍</span>
+        <input type="text" id="cp-search-input" class="cp-input" placeholder="Type a command, question, or crop name... (e.g. 'Weather', 'Paddy', 'Sell Rice')" autocomplete="off">
+        <kbd class="cp-kbd">ESC</kbd>
+      </div>
+      <div class="cp-results-list" id="cp-results">
+        <div class="cp-category">Quick Navigation</div>
+        <button class="cp-item" data-action="nav" data-target="dashboard">
+          <span class="cp-item-icon">🌾</span>
+          <span class="cp-item-label">Go to Farmer Dashboard</span>
+          <span class="cp-shortcut">G + D</span>
+        </button>
+        <button class="cp-item" data-action="nav" data-target="ai-assistant">
+          <span class="cp-item-icon">💬</span>
+          <span class="cp-item-label">Ask AI Assistant</span>
+          <span class="cp-shortcut">G + A</span>
+        </button>
+        <button class="cp-item" data-action="nav" data-target="disease">
+          <span class="cp-item-icon">📷</span>
+          <span class="cp-item-label">Scan Crop Disease</span>
+          <span class="cp-shortcut">G + S</span>
+        </button>
+        <button class="cp-item" data-action="nav" data-target="weather">
+          <span class="cp-item-icon">🌦️</span>
+          <span class="cp-item-label">Check Weather & Farming Impact</span>
+          <span class="cp-shortcut">G + W</span>
+        </button>
+        <button class="cp-item" data-action="nav" data-target="market">
+          <span class="cp-item-icon">💰</span>
+          <span class="cp-item-label">Check Mandi Prices & Trends</span>
+          <span class="cp-shortcut">G + M</span>
+        </button>
+        <div class="cp-category">Quick Actions</div>
+        <button class="cp-item" data-action="demo-walkthrough">
+          <span class="cp-item-icon">✨</span>
+          <span class="cp-item-label">Run Hackathon Demonstration Mode</span>
+          <span class="cp-chip">Demo</span>
+        </button>
+        <button class="cp-item" data-action="toggle-theme">
+          <span class="cp-item-icon">🌗</span>
+          <span class="cp-item-label">Toggle Dark / Light Theme</span>
+        </button>
+        <button class="cp-item" data-action="toggle-low-bandwidth">
+          <span class="cp-item-icon">⚡</span>
+          <span class="cp-item-label">Toggle Rural Low-Bandwidth Mode</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI Explanation Modal -->
+  <div id="ai-explanation-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-expl-title">
+    <div class="explanation-modal-box">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">🧠</span>
+          <div>
+            <h3 id="modal-expl-title" class="modal-title">AI Grounded Decision Trace</h3>
+            <span class="modal-subtitle">Transparent institutional reasoning & data provenance</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="close-explanation-modal" aria-label="Close modal">✕</button>
+      </div>
+      <div class="modal-body" id="modal-expl-content">
+        <!-- Injected via JavaScript -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-close-expl-footer">Close Trace</button>
+        <button class="btn btn-primary" id="btn-copy-expl">Copy Explanation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Crop Detail Modal -->
+  <div id="crop-detail-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-crop-title">
+    <div class="crop-modal-box">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon" id="modal-crop-icon">🌱</span>
+          <div>
+            <h3 id="modal-crop-title" class="modal-title">Crop Agronomic Profile</h3>
+            <span class="modal-subtitle" id="modal-crop-subtitle">Comprehensive package of practices</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="close-crop-modal" aria-label="Close modal">✕</button>
+      </div>
+      <div class="modal-body" id="modal-crop-body">
+        <!-- Injected via JavaScript -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btn-close-crop-footer">Dismiss</button>
+        <button class="btn btn-primary" id="btn-crop-select-advisory">Set as Active Crop</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Smart Notifications Panel / Drawer -->
+  <div id="notifications-drawer" class="notifications-drawer hidden" role="region" aria-label="Smart Alerts Panel">
+    <div class="nd-header">
+      <div class="nd-title-row">
+        <span class="nd-icon">🔔</span>
+        <h4>Smart Field Alerts</h4>
+      </div>
+      <button class="nd-close-btn" id="close-notifications-btn" aria-label="Close alerts panel">✕</button>
+    </div>
+    <div class="nd-list" id="nd-alerts-list">
+      <!-- Injected via JavaScript -->
+    </div>
+    <div class="nd-footer">
+      <button class="btn btn-outline btn-sm w-full" id="btn-clear-alerts">Acknowledge All</button>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- MAIN STICKY NAVIGATION BAR (Advanced Header)              -->
+  <!-- ======================================================== -->
+  <header class="app-topbar" id="app-topbar">
+    <div class="topbar-inner">
+      
+      <!-- Brand & Mobile Toggle -->
+      <div class="topbar-left">
+        <button class="mobile-toggle-btn" id="mobile-sidebar-toggle" aria-label="Open Navigation">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <a href="#" class="topbar-brand" data-nav="landing">
+          <div class="brand-logo-mark">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2z"/><path d="M12 6v12"/><path d="M8 10c2-2 6-2 8 0"/><path d="M7 14c3-2 7-2 10 0"/></svg>
+          </div>
+          <span class="brand-title">AgriSense <span class="brand-accent">AI</span></span>
+        </a>
+      </div>
+
+      <!-- Center Desktop Navigation Links -->
+      <nav class="topbar-nav" aria-label="Primary Navigation">
+        <button class="topbar-link active" data-nav="dashboard">Dashboard</button>
+        <button class="topbar-link" data-nav="ai-assistant">AI Assistant</button>
+        <button class="topbar-link" data-nav="crops">Crops</button>
+        <button class="topbar-link" data-nav="weather">Weather</button>
+        <button class="topbar-link" data-nav="soil">Soil</button>
+        <button class="topbar-link" data-nav="market">Market</button>
+        <button class="topbar-link" data-nav="disease">Disease</button>
+        <button class="topbar-link" data-nav="recommendations">Advisory</button>
+        <button class="topbar-link" data-nav="comparison">Compare</button>
+        <button class="topbar-link" data-nav="sources">Registry</button>
+      </nav>
+
+      <!-- Right Side Utilities & Controls -->
+      <div class="topbar-right">
+        
+        <!-- Command Palette Trigger Button -->
+        <button class="btn-cp-trigger" id="btn-trigger-cp" title="Open Command Palette (Ctrl+K)">
+          <span>🔍</span>
+          <span class="cp-trigger-text">Search</span>
+          <kbd class="cp-trigger-kbd">Ctrl K</kbd>
+        </button>
+
+        <!-- Hackathon Presentation Mode Button (Section 39) -->
+        <button class="btn btn-ai btn-sm" id="btn-hackathon-demo" title="1-Click Guided Hackathon Walkthrough for Judges">
+          <span>✨</span>
+          <span class="btn-label">Demo</span>
+        </button>
+
+        <!-- Notifications Bell -->
+        <button class="topbar-icon-btn" id="btn-open-notifications" aria-label="View alerts" title="Smart Field Alerts">
+          <span class="icon-wrap">🔔</span>
+          <span class="notification-badge" id="alert-counter-badge">3</span>
+        </button>
+
+        <!-- Low-Bandwidth Mode Button -->
+        <button class="topbar-icon-btn" id="btn-low-bandwidth" aria-label="Toggle low bandwidth mode" title="Rural Low-Bandwidth Mode">
+          <span>⚡</span>
+        </button>
+
+        <!-- Theme Toggle (Dark/Light) -->
+        <button class="topbar-icon-btn" id="btn-theme-toggle" aria-label="Toggle theme" title="Toggle Dark/Light Mode">
+          <span id="theme-toggle-icon">☀️</span>
+        </button>
+
+        <!-- Bilingual Switcher -->
+        <div class="lang-switch-group">
+          <button class="btn-lang active" id="btn-lang-en" data-lang="en">EN</button>
+          <button class="btn-lang" id="btn-lang-ta" data-lang="ta">தமிழ்</button>
+        </div>
+
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ======================================================== -->
+  <!-- MAIN APPLICATION CONTENT CONTAINER                      -->
+  <!-- ======================================================== -->
+  <main class="main-content-shell" id="main-content">
+
+    <!-- ======================================================== -->
+    <!-- VIEW 0: PREMIUM LANDING PAGE (Section 3)                -->
+    <!-- ======================================================== -->
+    <section class="page-view" id="view-landing">
+      
+      <div class="hero-section">
+        <div class="hero-bg-particles" aria-hidden="true">
+          <div class="particle p-1"></div>
+          <div class="particle p-2"></div>
+          <div class="particle p-3"></div>
+          <div class="particle p-4"></div>
+        </div>
+
+        <div class="hero-content">
+          <div class="hero-badge-pill">
+            <span class="hbp-icon">🌿</span>
+            <span data-i18n="heroPill">Next-Generation Precision Agritech OS</span>
+            <span class="hbp-tag">v1.2</span>
+          </div>
+
+          <h1 class="hero-main-title">
+            Smarter Farming.<br>
+            <span class="gradient-text">Better Decisions.</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            AI-powered, region-aware agricultural intelligence for every farmer. Turning fragmented weather, soil chemistry, mandi markets, and crop phenology into simple, explainable decisions.
+          </p>
+
+          <div class="hero-cta-group">
+            <button class="btn btn-primary btn-lg" id="btn-hero-explore">
+              <span>🌾</span>
+              <span>Explore AgriSense</span>
+            </button>
+            <button class="btn btn-ai btn-lg" id="btn-hero-ask">
+              <span>✨</span>
+              <span>Ask AI Assistant</span>
+            </button>
+            <button class="btn btn-glass btn-lg" id="btn-hero-demo">
+              <span>⚖️</span>
+              <span>3-District Demo</span>
+            </button>
+          </div>
+
+          <!-- Hero Telemetry Floating Cards -->
+          <div class="hero-floating-grid">
+            <div class="floating-card fc-weather">
+              <span class="fc-icon">🌦️</span>
+              <div class="fc-info">
+                <span class="fc-label">IMD Agromet Window</span>
+                <strong>RH 84% • 15% Rain • Spray Safe</strong>
+              </div>
+            </div>
+            <div class="floating-card fc-score">
+              <span class="fc-icon">🎯</span>
+              <div class="fc-info">
+                <span class="fc-label">Farm Intelligence Score</span>
+                <strong>87 / 100 • Optimal Tillering</strong>
+              </div>
+            </div>
+            <div class="floating-card fc-market">
+              <span class="fc-icon">📈</span>
+              <div class="fc-info">
+                <span class="fc-label">Mandi Price Momentum</span>
+                <strong>Paddy ₹2,350/Qtl • ↑ 4.2% (Hold)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Core Value Pillars Preview -->
+      <div class="landing-features-container">
+        <div class="section-title-center">
+          <span class="pill-chip">Why Generic AI Fails Farming</span>
+          <h2>Grounding Agricultural AI in True Regional Geography</h2>
+          <p>Every Indian district has distinct soil physics, canal timings, and disease pressures. AgriSense AI unifies 5 public data layers with deterministic packages of practices.</p>
+        </div>
+
+        <div class="features-grid-3">
+          <div class="feature-card">
+            <div class="fc-icon-box">📍</div>
+            <h3>District Agroclimatic Zoning</h3>
+            <p>Automatically isolates Cauvery Delta alluvial clay vs. Western calcareous loam vs. Southern dryland sandy loams.</p>
+          </div>
+          <div class="feature-card">
+            <div class="fc-icon-box">🛡️</div>
+            <h3>Deterministic Safety Rules</h3>
+            <p>Hard institutional boundary limits enforce safe chemical dosages per acre and prevent toxic vegetative lodging.</p>
+          </div>
+          <div class="feature-card">
+            <div class="fc-icon-box">🔍</div>
+            <h3>AI Disease Diagnostics</h3>
+            <p>Visual leaf symptom scanner identifies fungal blast and brown spot with 94%+ confidence and organic treatment pathways.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 1: FARMER DASHBOARD (Section 8 & 9)                -->
+    <!-- ======================================================== -->
+    <section class="page-view active" id="view-dashboard">
+      
+      <!-- Top Greeting & Context Bar -->
+      <div class="dashboard-greeting-bar">
+        <div class="dgb-left">
+          <h2 class="greeting-heading">Good Morning, Farmer 🌾</h2>
+          <p class="greeting-subtext">Here is today's localized agricultural intelligence for your farm.</p>
+        </div>
+        <div class="dgb-right">
+          <div class="location-picker-box">
+            <span class="lpb-icon">📍</span>
+            <div class="lpb-text">
+              <span class="lpb-label">Active Agroclimatic Region</span>
+              <select id="dash-district-select" class="dash-select">
+                <option value="Thanjavur" selected>Tamil Nadu • Thanjavur (Cauvery Delta)</option>
+                <option value="Coimbatore">Tamil Nadu • Coimbatore (Western Zone)</option>
+                <option value="Madurai">Tamil Nadu • Madurai (Southern Dry Zone)</option>
+                <option value="Tiruchirappalli">Tamil Nadu • Tiruchirappalli (Mid-Valley)</option>
+                <option value="Nagapattinam">Tamil Nadu • Nagapattinam (Coastal Delta)</option>
+              </select>
+            </div>
+          </div>
+          <div class="live-clock-pill">
+            <span class="live-dot"></span>
+            <span id="live-telemetry-status">IMD & TNAU Grounded: Online</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Smart Alerts Strip (Section 19) -->
+      <div class="alerts-banner-strip" id="alerts-banner-strip">
+        <div class="alert-chip-item alert-medium">
+          <span class="ac-icon">💧</span>
+          <span class="ac-text"><strong>Irrigation Notice:</strong> Mettur rotational canal discharge active. Standing water &lt; 2.5cm advised.</span>
+        </div>
+        <div class="alert-chip-item alert-high">
+          <span class="ac-icon">⚠️</span>
+          <span class="ac-text"><strong>Microclimate Alert:</strong> Morning dew point exceeding 86% humidity — monitor lower tillers for Sheath Blight.</span>
+        </div>
+      </div>
+
+      <!-- Primary Dashboard Grid: Farm Intelligence Score & Real-Time Telemetry -->
+      <div class="dashboard-hero-grid">
+        
+        <!-- 1. Farm Intelligence Score Card (Section 9) -->
+        <div class="farm-score-card">
+          <div class="fsc-header">
+            <div class="fsc-title-group">
+              <span class="fsc-badge">Holistic Index</span>
+              <h3>Farm Intelligence Score</h3>
+            </div>
+            <span class="fsc-status-pill status-excellent" id="farm-score-status">Excellent</span>
+          </div>
+
+          <div class="fsc-body">
+            <!-- Circular Animated Gauge -->
+            <div class="score-circle-wrapper">
+              <svg class="score-gauge-svg" viewBox="0 0 120 120">
+                <circle class="gauge-track" cx="60" cy="60" r="50"></circle>
+                <circle class="gauge-fill" id="gauge-fill-circle" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="40"></circle>
+              </svg>
+              <div class="score-number-box">
+                <span class="score-number" id="dash-score-val">87</span>
+                <span class="score-denom">/ 100</span>
+              </div>
+            </div>
+
+            <!-- Score Sub-metrics Breakdown -->
+            <div class="score-breakdown-list">
+              <div class="sbl-item">
+                <span class="sbl-label">Weather Suitability</span>
+                <div class="sbl-bar-wrap"><div class="sbl-bar" style="width: 88%;"></div></div>
+                <span class="sbl-val">88%</span>
+              </div>
+              <div class="sbl-item">
+                <span class="sbl-label">Soil Chemistry</span>
+                <div class="sbl-bar-wrap"><div class="sbl-bar" style="width: 94%;"></div></div>
+                <span class="sbl-val">94%</span>
+              </div>
+              <div class="sbl-item">
+                <span class="sbl-label">Irrigation Condition</span>
+                <div class="sbl-bar-wrap"><div class="sbl-bar" style="width: 85%;"></div></div>
+                <span class="sbl-val">85%</span>
+              </div>
+              <div class="sbl-item">
+                <span class="sbl-label">Crop Health</span>
+                <div class="sbl-bar-wrap"><div class="sbl-bar" style="width: 82%;"></div></div>
+                <span class="sbl-val">82%</span>
+              </div>
+              <div class="sbl-item">
+                <span class="sbl-label">Market Timing</span>
+                <div class="sbl-bar-wrap"><div class="sbl-bar" style="width: 86%;"></div></div>
+                <span class="sbl-val">86%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="fsc-footer">
+            <span class="fsc-summary" id="dash-score-summary">Optimal condition for active tillering top-dress. Rain risk is minimal for next 36h.</span>
+          </div>
+        </div>
+
+        <!-- 2. Weather & Farming Impact Card (Section 12) -->
+        <div class="dash-telemetry-card card-weather">
+          <div class="dtc-header">
+            <span class="dtc-icon">🌦️</span>
+            <div>
+              <h4>Local Weather Intelligence</h4>
+              <span class="dtc-sub">IMD Agromet 3-Hour Gridded Feed</span>
+            </div>
+          </div>
+          <div class="dtc-main-stat">
+            <div class="dms-temp">
+              <span class="temp-big" id="dash-weather-temp">29.4°C</span>
+              <span class="temp-cond" id="dash-weather-cond">Partly Cloudy • Favorable</span>
+            </div>
+            <div class="dms-mini-grid">
+              <div class="dmg-item"><span>Humidity</span><strong id="dash-weather-rh">82%</strong></div>
+              <div class="dmg-item"><span>Rain Risk</span><strong id="dash-weather-rain">15%</strong></div>
+              <div class="dmg-item"><span>Wind</span><strong id="dash-weather-wind">8.5 km/h</strong></div>
+            </div>
+          </div>
+          <!-- Farming Impact Matrix -->
+          <div class="farming-impact-matrix">
+            <span class="fim-title">Today's Farming Operation Impacts:</span>
+            <div class="fim-grid">
+              <div class="fim-badge impact-wait"><span class="fim-lbl">Irrigation:</span><strong>WAIT (Moist)</strong></div>
+              <div class="fim-badge impact-good"><span class="fim-lbl">Fertilizer:</span><strong>RECOMMENDED</strong></div>
+              <div class="fim-badge impact-good"><span class="fim-lbl">Spraying:</span><strong>FAVORABLE</strong></div>
+              <div class="fim-badge impact-good"><span class="fim-lbl">Harvest:</span><strong>FAVORABLE</strong></div>
+            </div>
+          </div>
+          <div class="dtc-footer">
+            <button class="btn btn-outline btn-sm" data-nav="weather">View 7-Day Forecast & Charts →</button>
+          </div>
+        </div>
+
+        <!-- 3. Soil Intelligence Snapshot Card (Section 13) -->
+        <div class="dash-telemetry-card card-soil">
+          <div class="dtc-header">
+            <span class="dtc-icon">🧪</span>
+            <div>
+              <h4>Soil Health Baseline</h4>
+              <span class="dtc-sub">Soil Health Card Portal Benchmark</span>
+            </div>
+          </div>
+          <div class="soil-meters-summary">
+            <div class="sm-item">
+              <span class="sm-lbl">Soil pH</span>
+              <div class="sm-val-row">
+                <strong id="dash-soil-ph">6.8</strong>
+                <span class="badge badge-success">Optimal</span>
+              </div>
+            </div>
+            <div class="sm-item">
+              <span class="sm-lbl">Available Nitrogen</span>
+              <div class="sm-val-row">
+                <strong id="dash-soil-n">210 kg/ha</strong>
+                <span class="badge badge-info">Medium</span>
+              </div>
+            </div>
+            <div class="sm-item">
+              <span class="sm-lbl">Organic Carbon</span>
+              <div class="sm-val-row">
+                <strong id="dash-soil-oc">0.58%</strong>
+                <span class="badge badge-success">Good</span>
+              </div>
+            </div>
+            <div class="sm-item">
+              <span class="sm-lbl">Available Zinc</span>
+              <div class="sm-val-row">
+                <strong id="dash-soil-zn">0.95 ppm</strong>
+                <span class="badge badge-success">Sufficient</span>
+              </div>
+            </div>
+          </div>
+          <div class="soil-ai-quote">
+            <span class="quote-icon">💡</span>
+            <p id="dash-soil-advice">Delta alluvial clay holds ample silt nutrients. Avoid high nitrogen surges to prevent lodging during monsoon squalls.</p>
+          </div>
+          <div class="dtc-footer">
+            <button class="btn btn-outline btn-sm" data-nav="soil">Explore Soil Dashboard & Remediation →</button>
+          </div>
+        </div>
+
+        <!-- 4. Mandi Market Pulse Card (Section 16) -->
+        <div class="dash-telemetry-card card-market">
+          <div class="dtc-header">
+            <span class="dtc-icon">💰</span>
+            <div>
+              <h4>Mandi Price & Sell Timing</h4>
+              <span class="dtc-sub">Agmarknet DMI Regulated Market</span>
+            </div>
+          </div>
+          <div class="market-main-stat">
+            <div class="mms-price">
+              <span class="price-val" id="dash-market-price">₹2,350</span>
+              <span class="price-unit">/ Quintal (Paddy Grade A)</span>
+            </div>
+            <div class="mms-change">
+              <span class="change-tag change-up" id="dash-market-change">↑ 4.2% this week</span>
+            </div>
+          </div>
+          <div class="sell-timing-box">
+            <span class="stb-label">AI Market Decision:</span>
+            <div class="stb-decision">
+              <span class="badge-decision decision-wait" id="dash-market-decision">HOLD / WAIT</span>
+              <p class="stb-reason" id="dash-market-reason">Arrival momentum indicates prices may gain another ₹40-60/Qtl over next 5 days.</p>
+            </div>
+          </div>
+          <div class="dtc-footer">
+            <button class="btn btn-outline btn-sm" data-nav="market">View Price Charts & Mandis →</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Farmer Question Engine Cards (Section 18) -->
+      <div class="farmer-question-engine-section">
+        <div class="fqe-header">
+          <span class="pill-chip">Fast Action Hub</span>
+          <h3>What do you want to know today?</h3>
+          <p>Click any agricultural category to jump straight into tailored AI workflows and grounded data.</p>
+        </div>
+        <div class="fqe-cards-grid">
+          <button class="fqe-card" data-action="ask-question" data-topic="irrigation">
+            <span class="fqe-icon">💧</span>
+            <strong>Should I Irrigate?</strong>
+            <span>Check moisture & rain</span>
+          </button>
+          <button class="fqe-card" data-action="ask-question" data-topic="fertilizer">
+            <span class="fqe-icon">🧪</span>
+            <strong>Fertilizer Dosage</strong>
+            <span>4-pillar grounded rates</span>
+          </button>
+          <button class="fqe-card" data-action="ask-question" data-topic="disease">
+            <span class="fqe-icon">🐛</span>
+            <strong>Identify Disease</strong>
+            <span>Leaf symptom scanner</span>
+          </button>
+          <button class="fqe-card" data-action="ask-question" data-topic="market">
+            <span class="fqe-icon">💰</span>
+            <strong>Sell or Hold?</strong>
+            <span>Mandi price forecast</span>
+          </button>
+          <button class="fqe-card" data-action="ask-question" data-topic="crop">
+            <span class="fqe-icon">🌱</span>
+            <strong>Crop to Plant</strong>
+            <span>Suitability by soil</span>
+          </button>
+          <button class="fqe-card" data-action="ask-question" data-topic="weather">
+            <span class="fqe-icon">🌧️</span>
+            <strong>Weather Alert</strong>
+            <span>Rain & storm window</span>
+          </button>
+          <button class="fqe-card" data-action="ask-question" data-topic="sowing">
+            <span class="fqe-icon">📅</span>
+            <strong>Sowing Window</strong>
+            <span>Regional calendar</span>
+          </button>
+          <button class="fqe-card" data-action="ask-question" data-topic="harvest">
+            <span class="fqe-icon">🌾</span>
+            <strong>Pre-Harvest Care</strong>
+            <span>Moisture & drying</span>
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 2: AI FARM ASSISTANT (Section 10)                  -->
+    <!-- ======================================================== -->
+    <section class="page-view" id="view-ai-assistant">
+      <div class="ai-chat-layout">
+        
+        <!-- Chat Header & Context Drawer -->
+        <div class="chat-header-bar">
+          <div class="ch-left">
+            <div class="ai-avatar">
+              <span>🌾</span>
+              <span class="ai-online-dot"></span>
+            </div>
+            <div>
+              <h3>AgriSense AI Farm Assistant</h3>
+              <p class="ai-status-text" id="ai-chat-status">● Online • Grounded in TNAU PoP & IMD Agromet</p>
+            </div>
+          </div>
+          <div class="ch-right">
+            <button class="btn btn-ghost btn-sm" id="btn-clear-chat">Clear History</button>
+            <button class="btn btn-outline btn-sm" id="btn-chat-explain-toggle">AI Explainability Trace</button>
+          </div>
+        </div>
+
+        <!-- Chat Conversation Messages Window -->
+        <div class="chat-messages-container" id="chat-messages-box">
+          <!-- Initial Assistant Message -->
+          <div class="chat-msg msg-ai">
+            <div class="msg-avatar">🌾</div>
+            <div class="msg-bubble">
+              <div class="msg-header">
+                <strong>AgriSense AI Assistant</strong>
+                <span class="msg-time">Just now</span>
+              </div>
+              <p>Vanakkam! I am your region-aware agricultural assistant. I have loaded your current farm parameters for <strong>Thanjavur (Cauvery Delta)</strong> for <strong>Samba Paddy</strong>.</p>
+              <p>Ask me any operational question about irrigation timing, fertilizer top-dressing, disease symptoms, or mandi prices.</p>
+              <div class="msg-citations">
+                <span>📚 Grounding Sources: TNAU PoP 2024 • IMD Agromet • SHC Cycle II</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Question Prompts -->
+        <div class="chat-quick-prompts">
+          <span class="cqp-label">Quick Prompts:</span>
+          <button class="chip chip-sm" data-prompt="Should I irrigate my paddy today?">💧 Should I irrigate today?</button>
+          <button class="chip chip-sm" data-prompt="How much urea should I apply during active tillering?">🧪 How much urea for tillering?</button>
+          <button class="chip chip-sm" data-prompt="Is leaf blast threatening my crop this week?">🐛 Blast disease risk this week?</button>
+          <button class="chip chip-sm" data-prompt="Is today a good day to sell paddy at the mandi?">💰 Is today a good day to sell?</button>
+          <button class="chip chip-sm" data-prompt="When is the ideal Samba nursery sowing date?">📅 When should I sow Samba paddy?</button>
+        </div>
+
+        <!-- Chat Input Row -->
+        <form class="chat-input-form" id="chat-input-form" onsubmit="event.preventDefault();">
+          <div class="chat-input-wrapper">
+            <input type="text" id="chat-user-input" class="chat-text-input" placeholder="Type your farming question in English or தமிழ்... (e.g. 'Should I spray fungicide today?')">
+            <button type="button" class="chat-mic-btn" id="btn-chat-mic" title="Voice Input (Speech-to-Text)">🎙️</button>
+            <button type="submit" class="btn btn-primary" id="btn-send-chat">
+              <span>Send</span>
+              <span>➔</span>
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 3: CROP INTELLIGENCE (Section 14)                  -->
+    <!-- ======================================================== -->
+    <section class="page-view" id="view-crops">
+      <div class="section-banner">
+        <div class="section-banner-text">
+          <span class="pill-chip">Precision Agronomy</span>
+          <h2>Crop Intelligence & Regional Suitability</h2>
+          <p>Scientific suitability analysis across Tamil Nadu agroclimatic zones based on soil texture, water availability, and growing degree days.</p>
+        </div>
+        <div class="crop-filter-row">
+          <button class="comp-btn active" data-crop-filter="all">All Crops</button>
+          <button class="comp-btn" data-crop-filter="cereals">Cereals</button>
+          <button class="comp-btn" data-crop-filter="commercial">Commercial</button>
+          <button class="comp-btn" data-crop-filter="pulses">Oilseeds & Pulses</button>
+        </div>
+      </div>
+
+      <div class="crops-cards-grid" id="crops-grid-container">
+        <!-- Rendered dynamically by script.js -->
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 4: WEATHER INTELLIGENCE (Section 12)               -->
+    <!-- ======================================================== -->
+    <section class="page-view" id="view-weather">
+      <div class="section-banner">
+        <div class="section-banner-text">
+          <span class="pill-chip">IMD Micro-Weather</span>
+          <h2>Regional Weather & Farming Impact Matrix</h2>
+          <p>High-resolution 3-hour agromet forecasts combined with operational field impact assessments.</p>
+        </div>
+      </div>
+
+      <div class="weather-dashboard-grid">
+        <!-- 7-Day Forecast Cards -->
+        <div class="forecast-7d-card">
+          <h3 class="card-heading">7-Day Agro-Meteorological Forecast</h3>
+          <div class="forecast-days-row" id="forecast-days-container">
+            <!-- Rendered by script.js -->
+          </div>
+        </div>
+
+        <!-- Rain Probability & Hourly Trend Chart -->
+        <div class="hourly-weather-card">
+          <h3 class="card-heading">24-Hour Rainfall Probability & Temperature Trend</h3>
+          <div class="chart-container-box">
+            <canvas id="weather-hourly-chart" width="700" height="220"></canvas>
+          </div>
+        </div>
+
+        <!-- Farming Impact Full Card -->
+        <div class="farming-impact-full-card">
+          <h3 class="card-heading">Agronomic Operational Action Matrix</h3>
+          <div class="fifc-grid">
+            <div class="fifc-item">
+              <span class="fifc-icon">💧</span>
+              <div class="fifc-text">
+                <strong>Irrigation Operation: WAIT</strong>
+                <p>Soil moisture is 68% and delta clay has high retention. Next irrigation scheduled in 4 days.</p>
+              </div>
+            </div>
+            <div class="fifc-item">
+              <span class="fifc-icon">🧪</span>
+              <div class="fifc-text">
+                <strong>Fertilizer Top-Dressing: RECOMMENDED</strong>
+                <p>No heavy monsoon squall in next 36 hours. Dew-free morning hours ideal for gypsum-urea blend.</p>
+              </div>
+            </div>
+            <div class="fifc-item">
+              <span class="fifc-icon">💨</span>
+              <div class="fifc-text">
+                <strong>Chemical Foliar Spraying: FAVORABLE</strong>
+                <p>Wind speeds average 8 km/h. Minimal drift risk for knapsack sprayers before 11:00 AM.</p>
+              </div>
+            </div>
+            <div class="fifc-item">
+              <span class="fifc-icon">🌾</span>
+              <div class="fifc-text">
+                <strong>Grain Harvest / Sun Drying: FAVORABLE</strong>
+                <p>Sunshine duration exceeds 7.5 hours daily with relative humidity dipping to 62% at midday.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 5: SOIL INTELLIGENCE (Section 13)                  -->
+    <!-- ======================================================== -->
+    <section class="page-view" id="view-soil">
+      <div class="section-banner">
+        <div class="section-banner-text">
+          <span class="pill-chip">Soil Health Card Portal</span>
+          <h2>Soil Chemistry & Nutrient Baselines</h2>
+          <p>Verified macro and micro-nutrient profiles for selected agroclimatic blocks with precision amendment recommendations.</p>
+        </div>
+      </div>
+
+      <div class="soil-dashboard-grid">
+        <!-- pH Gauge & Overview Card -->
+        <div class="soil-ph-card">
+          <h3 class="card-heading">Soil Reaction (pH) & Buffer Capacity</h3>
+          <div class="ph-gauge-wrapper">
+            <div class="ph-meter-track">
+              <div class="ph-needle" id="ph-needle" style="left: 48%;"></div>
+            </div>
+            <div class="ph-labels-row">
+              <span>Acidic (&lt;6.0)</span>
+              <span>Neutral (6.5–7.5)</span>
+              <span>Alkaline (&gt;8.0)</span>
+            </div>
+            <div class="ph-active-reading">
+              <strong id="soil-detail-ph-val">6.8 pH</strong>
+              <span class="badge badge-success" id="soil-detail-ph-status">Near Neutral • Optimal for Paddy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- N-P-K & Micronutrient Levels Grid -->
+        <div class="soil-nutrients-detail-card">
+          <h3 class="card-heading">Available Nutrient Test Values (Soil Health Card)</h3>
+          <div class="nutrient-bars-list" id="soil-nutrients-list">
+            <!-- Rendered by script.js -->
+          </div>
+        </div>
+
+        <!-- AI Soil Health Remediation Card -->
+        <div class="soil-remediation-card">
+          <h3 class="card-heading">AI Soil Health Prescription</h3>
+          <div class="sh-prescription-box">
+            <div class="shp-item">
+              <strong>Organic Carbon Augmentation:</strong>
+              <p>Incorporate green manure (Daincha / Sunnhemp @ 20 kg/acre) prior to transplanting to elevate microbial carbon reserves.</p>
+            </div>
+            <div class="shp-item">
+              <strong>Zinc Deficiency Prevention:</strong>
+              <p>Delta soils fix inorganic zinc. Apply 0.5% ZnSO4 foliar spray to prevent Khaira seedling chlorosis.</p>
+            </div>
+            <div class="shp-item">
+              <strong>Gypsum Incorporation:</strong>
+              <p>Apply 200 kg gypsum per acre at final puddling to improve soil flocculation and reduce subsoil compaction.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 6: CROP DISEASE DETECTION STUDIO (Section 15)      -->
+    <!-- ======================================================== -->
+    <section class="page-view" id="view-disease">
+      <div class="section-banner">
+        <div class="section-banner-text">
+          <span class="pill-chip">Computer Vision Diagnosis</span>
+          <h2>AI Crop Disease Detection Studio</h2>
+          <p>Instant leaf symptom diagnosis trained on TNAU plant pathology taxonomies. Upload a leaf photo or test with verified sample cases.</p>
+        </div>
+      </div>
+
+      <div class="disease-scanner-layout">
+        
+        <!-- Image Upload & Scanner Canvas -->
+        <div class="scanner-upload-card">
+          <div class="upload-dropzone" id="disease-dropzone">
+            <div class="dropzone-empty-state" id="dropzone-empty-state">
+              <span class="dz-icon">📷</span>
+              <h4>Upload Crop Leaf Photo</h4>
+              <p>Drag & drop photo here or click to browse (JPG, PNG)</p>
+              <input type="file" id="disease-file-input" accept="image/*" class="hidden-file-input">
+              <button type="button" class="btn btn-outline" id="btn-browse-file">Browse Photo</button>
+            </div>
+
+            <!-- Image Preview with Laser Scanning Beam -->
+            <div class="dropzone-preview-container hidden" id="dz-preview-container">
+              <img id="dz-preview-img" src="" alt="Crop leaf preview" class="preview-image">
+              <div class="scanner-laser-beam" id="scanner-laser"></div>
+              <div class="scanner-status-overlay" id="scanner-status-overlay">
+                <span class="sso-spinner">◌</span>
+                <span class="sso-text">Scanning leaf pathology markers...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Test Sample Cases -->
+          <div class="sample-test-cases">
+            <span class="stc-label">Or test with verified field samples:</span>
+            <div class="stc-buttons">
+              <button class="btn btn-ghost btn-sm active" data-sample="blast">Leaf Blast (Paddy)</button>
+              <button class="btn btn-ghost btn-sm" data-sample="brown_spot">Brown Spot (Paddy)</button>
+              <button class="btn btn-ghost btn-sm" data-sample="healthy">Healthy Leaf</button>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-lg w-full" id="btn-trigger-scan">
+            <span>🔍</span>
+            <span>Analyze Crop Image</span>
+          </button>
+        </div>
+
+        <!-- Disease Diagnostic Result Card -->
+        <div class="scanner-result-card" id="scanner-result-card">
+          <div class="src-header">
+            <div class="src-title-group">
+              <span class="src-badge">Pathology Diagnosis</span>
+              <h3 id="diag-disease-name">Paddy Leaf Blast (Magnaporthe oryzae)</h3>
+            </div>
+            <span class="severity-pill sev-moderate" id="diag-severity">Moderate Severity</span>
+          </div>
+
+          <div class="src-confidence-bar">
+            <div class="scb-label">
+              <span>Diagnostic Confidence:</span>
+              <strong id="diag-confidence">94.2% Match</strong>
+            </div>
+            <div class="scb-track">
+              <div class="scb-fill" id="diag-conf-fill" style="width: 94.2%;"></div>
+            </div>
+          </div>
+
+          <div class="src-treatment-block">
+            <h4 class="treatment-title">Recommended Agronomic Actions:</h4>
+            
+            <div class="treatment-item treat-organic">
+              <span class="ti-tag">🌿 Organic Remediation</span>
+              <p id="diag-treat-organic">Spray Pseudomonas fluorescens (Pf1) liquid formulation @ 500 ml/acre in 200L water during early morning hours.</p>
+            </div>
+
+            <div class="treatment-item treat-chemical">
+              <span class="ti-tag">🧪 Chemical Prescription</span>
+              <p id="diag-treat-chem">Foliar spray of Tricyclazole 75% WP @ 120g/acre or Azoxystrobin 18.2% + Difenoconazole 11.4% SC @ 200 ml/acre.</p>
+            </div>
+
+            <div class="treatment-item treat-prevent">
+              <span class="ti-tag">🛡️ Preventive Cultural Practice</span>
+              <p id="diag-treat-prev">Avoid excess nitrogen top-dressing during foggy, high-humidity weeks. Ensure field water circulation.</p>
+            </div>
+          </div>
+
+          <div class="src-disclaimer">
+            <span class="disc-icon">⚠️</span>
+            <p id="diag-disclaimer">Important Notice: AI computer vision output is an advisory aid and does not substitute professional agricultural extension officers. Verify with local village agricultural worker before large-scale pesticide purchase.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 7: MARKET INTELLIGENCE (Section 16)                -->
+    <!-- ======================================================== -->
+    <section class="page-view" id="view-market">
+      <div class="section-banner">
+        <div class="section-banner-text">
+          <span class="pill-chip">Agmarknet DMI Real-Time</span>
+          <h2>Mandi Market Prices & Selling Intelligence</h2>
+          <p>Regulated market arrival volumes, price volatility trends, and AI-driven "Sell vs. Hold" optimization.</p>
+        </div>
+      </div>
+
+      <div class="market-dashboard-layout">
+        
+        <!-- Mandi Price Pulse Card -->
+        <div class="market-pulse-card">
+          <div class="mpc-top">
+            <span class="mpc-mandi-tag" id="market-mandi-tag">Thanjavur Regulated Market</span>
+            <div class="mpc-price-box">
+              <span class="mpc-price" id="market-current-price">₹2,350</span>
+              <span class="mpc-unit">/ Quintal</span>
+            </div>
+            <span class="change-tag change-up" id="market-change-badge">↑ 4.2% vs Last Week</span>
+          </div>
+
+          <!-- AI "Is Today a Good Day to Sell?" (Section 16) -->
+          <div class="sell-decision-hero-box">
+            <span class="sdh-title">Is Today a Good Day to Sell?</span>
+            <div class="sdh-status-badge badge-hold" id="market-sell-badge">WAIT / HOLD</div>
+            <p class="sdh-explanation" id="market-sell-expl">
+              Procurement centers report steady arrival volume with 3.5% weekly upward momentum. Recommended to hold inventory for 5–7 days before selling for an estimated gain of ₹40–60 per quintal.
+            </p>
+          </div>
+        </div>
+
+        <!-- 7-Day / 30-Day Price Chart -->
+        <div class="market-chart-card">
+          <div class="mcc-header">
+            <h4>Mandi Price Trend Analysis</h4>
+            <div class="mcc-timeline-toggles">
+              <button class="comp-btn active" id="btn-chart-7d">7 Days</button>
+              <button class="comp-btn" id="btn-chart-30d">30 Days</button>
+            </div>
+          </div>
+          <div class="mcc-chart-box">
+            <canvas id="market-price-chart" width="700" height="230"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 8: RECOMMENDATIONS (4 Pillars Engine)              -->
+    <!-- ======================================================== -->
+    <section class="page-view" id="view-recommendations">
+      
+      <!-- Query Matrix Form -->
+      <section class="query-builder-card" aria-labelledby="query-section-title">
+        <div class="card-header-bar">
+          <div class="card-header-title">
+            <span class="icon-bubble">🌾</span>
+            <div>
+              <h3 id="query-section-title" class="section-title" data-i18n="querySectionTitle">Farmer Query & Context Matrix</h3>
+              <p class="section-subtitle" data-i18n="querySectionSubtitle">Select precise geographical and agronomic parameters to unlock grounded recommendations.</p>
+            </div>
+          </div>
+          <span class="context-pill" id="active-parameter-summary">Thanjavur • Paddy • Samba • Tillering</span>
+        </div>
+
+        <form id="advisor-form" class="advisor-form" onsubmit="event.preventDefault();">
+          <div class="selectors-grid">
+            
+            <div class="form-group">
+              <label for="select-district" class="field-label">
+                <span class="label-icon">📍</span>
+                <span data-i18n="labelDistrict">District (Agroclimatic Zone)</span>
+                <span class="required-star">*</span>
+              </label>
+              <div class="select-wrapper">
+                <select id="select-district" class="custom-select" required>
+                  <option value="Thanjavur" selected>Thanjavur (Cauvery Delta Zone)</option>
+                  <option value="Coimbatore">Coimbatore (Western Agroclimatic Zone)</option>
+                  <option value="Madurai">Madurai (Southern Semi-Arid Zone)</option>
+                  <option value="Tiruchirappalli">Tiruchirappalli (Mid-Cauvery Valley)</option>
+                  <option value="Nagapattinam">Nagapattinam (Coastal Delta / Saline Belt)</option>
+                </select>
+              </div>
+              <span class="field-hint" id="district-zone-hint">Delta alluvium • Heavy clay • High water table</span>
+            </div>
+
+            <div class="form-group">
+              <label for="select-crop" class="field-label">
+                <span class="label-icon">🌱</span>
+                <span data-i18n="labelCrop">Crop</span>
+                <span class="required-star">*</span>
+              </label>
+              <div class="select-wrapper">
+                <select id="select-crop" class="custom-select" required>
+                  <option value="Paddy" selected>Paddy / Rice (நெல்)</option>
+                  <option value="Maize">Maize (மக்காச்சோளம்)</option>
+                  <option value="Sugarcane">Sugarcane (கரும்பு)</option>
+                  <option value="Cotton">Cotton (பருத்தி)</option>
+                  <option value="Banana">Banana (வாழை)</option>
+                  <option value="Groundnut">Groundnut (நிலக்கடலை)</option>
+                </select>
+              </div>
+              <span class="field-hint" id="crop-variety-hint">Staple cereal • Moisture-sensitive</span>
+            </div>
+
+            <div class="form-group">
+              <label for="select-season" class="field-label">
+                <span class="label-icon">☀️</span>
+                <span data-i18n="labelSeason">Season (பருவம்)</span>
+                <span class="required-star">*</span>
+              </label>
+              <div class="select-wrapper">
+                <select id="select-season" class="custom-select" required>
+                  <option value="Kuruvai">Kuruvai (June–Sept / Summer-Monsoon)</option>
+                  <option value="Samba" selected>Samba / Thaladi (Aug–Jan / Main Northeast Monsoon)</option>
+                  <option value="Navarai">Navarai (Dec–May / Dry Summer Season)</option>
+                </select>
+              </div>
+              <span class="field-hint" id="season-window-hint">Northeast monsoon rainfall window</span>
+            </div>
+
+            <div class="form-group">
+              <label for="select-stage" class="field-label">
+                <span class="label-icon">📈</span>
+                <span data-i18n="labelStage">Growth Stage</span>
+                <span class="required-star">*</span>
+              </label>
+              <div class="select-wrapper">
+                <select id="select-stage" class="custom-select" required>
+                  <option value="Basal">Nursery & Basal Land Preparation (0–15 Days)</option>
+                  <option value="Tillering" selected>Active Tillering / Vegetative (15–40 Days)</option>
+                  <option value="PanicleInitiation">Panicle Initiation / Booting (40–65 Days)</option>
+                  <option value="Flowering">Flowering & Anthesis (65–85 Days)</option>
+                  <option value="GrainFilling">Grain Milking & Ripening (85–110 Days)</option>
+                  <option value="Harvest">Maturity & Pre-Harvest (110–135 Days)</option>
+                </select>
+              </div>
+              <span class="field-hint" id="stage-phenology-hint">Peak nitrogen demand window</span>
+            </div>
+
+          </div>
+
+          <div class="search-box-row">
+            <div class="input-with-icon">
+              <span class="input-icon">🔍</span>
+              <input type="text" id="input-question" class="text-input" 
+                     placeholder="e.g., How much nitrogen should I apply per acre during active tillering?" 
+                     value="What is the recommended Nitrogen management during active tillering?"
+                     aria-label="Farmer Question Input">
+            </div>
+            <button type="button" id="btn-submit-query" class="btn btn-primary btn-lg">
+              <span class="btn-icon">⚡</span>
+              <span data-i18n="btnGenerate">Generate Grounded Advisory</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- AI Recommendation Output Section -->
+      <section id="advisory-result-container" class="result-section">
+        
+        <div class="result-header-card">
+          <div class="result-title-group">
+            <div class="result-status-flag">
+              <span class="flag-icon">🎯</span>
+              <span class="flag-text" data-i18n="advisoryGroundedBadge">Agroclimatically Grounded Result</span>
+            </div>
+            <h3 id="recommendation-heading" class="result-headline">
+              Paddy Nitrogen Management Advisory for Thanjavur (Cauvery Delta)
+            </h3>
+            <div class="result-meta-tags">
+              <span class="meta-tag" id="res-district-badge">📍 Thanjavur</span>
+              <span class="meta-tag" id="res-soil-badge">🪨 Heavy Alluvial Clay</span>
+              <span class="meta-tag" id="res-season-badge">☀️ Samba Season</span>
+              <span class="meta-tag" id="res-stage-badge">📈 Active Tillering</span>
+            </div>
+          </div>
+
+          <!-- Quick Action Toolbar -->
+          <div class="result-actions-toolbar">
+            <button type="button" class="result-action-btn" id="btn-listen-tts" title="Voice Readout">
+              <span class="ra-icon">🔊</span>
+              <span class="ra-text" id="tts-btn-text">Listen Audio</span>
+            </button>
+            <button type="button" class="result-action-btn" id="btn-copy-advisory" title="Copy Text">
+              <span class="ra-icon">📋</span>
+              <span class="ra-text">Copy Text</span>
+            </button>
+            <button type="button" class="result-action-btn" id="btn-print-advisory" title="Print/PDF">
+              <span class="ra-icon">🖨️</span>
+              <span class="ra-text">Print / PDF</span>
+            </button>
+          </div>
+
+          <div class="result-provenance-box">
+            <div class="prototype-notice-strip">
+              <span class="notice-icon">⚠️</span>
+              <span class="notice-text" data-i18n="protoAdvisoryLabel">Prototype advisory data — Demonstration MVP</span>
+            </div>
+            <div class="data-age-indicator" id="data-age-indicator">
+              <span class="freshness-dot pulse"></span>
+              <span class="age-text" id="res-data-age" data-i18n="dataAgeText">Knowledge Base: TNAU PoP • High Freshness</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Warning Banner -->
+        <aside class="region-warning-banner" id="res-warning-banner" role="alert">
+          <div class="warning-icon-col">⚠️</div>
+          <div class="warning-content-col">
+            <strong class="warning-title" id="res-warning-title">District Agronomic Alert: Cauvery Delta Dynamics</strong>
+            <p class="warning-message" id="res-warning-text">Heavy clay retains moisture. Never broadcast urea into standing water &gt;2.5cm.</p>
+          </div>
+        </aside>
+
+        <!-- 4 Pillars Grid -->
+        <div class="four-pillars-grid">
+          <article class="pillar-card card-what">
+            <div class="pillar-card-header">
+              <div class="pillar-badge badge-what"><span class="pillar-num">01</span><span data-i18n="pillarWhat">WHAT TO DO</span></div>
+              <span class="pillar-category">Prescribed Action</span>
+            </div>
+            <div class="pillar-card-body">
+              <h4 class="action-highlight" id="res-what-title">Neem-Coated Urea with Gypsum</h4>
+              <p class="pillar-detail" id="res-what-desc">Apply neem-coated urea blended with gypsum (1:3:1) 24h prior.</p>
+            </div>
+            <div class="pillar-card-footer"><span class="tag-practical">Prescribed Action</span></div>
+          </article>
+
+          <article class="pillar-card card-when">
+            <div class="pillar-card-header">
+              <div class="pillar-badge badge-when"><span class="pillar-num">02</span><span data-i18n="pillarWhen">WHEN</span></div>
+              <span class="pillar-category">Weather Window</span>
+            </div>
+            <div class="pillar-card-body">
+              <h4 class="action-highlight" id="res-when-title">25 to 28 DAT</h4>
+              <p class="pillar-detail" id="res-when-desc">Apply during early morning dew-free hours.</p>
+            </div>
+            <div class="pillar-card-footer"><span class="tag-practical">Application Window</span></div>
+          </article>
+
+          <article class="pillar-card card-howmuch">
+            <div class="pillar-card-header">
+              <div class="pillar-badge badge-howmuch"><span class="pillar-num">03</span><span data-i18n="pillarHowMuch">HOW MUCH</span></div>
+              <span class="pillar-category">Calibrated Dosage</span>
+            </div>
+            <div class="pillar-card-body">
+              <h4 class="action-highlight" id="res-howmuch-title">22 kg Urea + 10 kg MOP</h4>
+              <p class="pillar-detail" id="res-howmuch-desc">Calibrated for Thanjavur alluvial clay OC 0.58%.</p>
+            </div>
+            <div class="pillar-card-footer"><span class="tag-practical">Calibrated Rate</span></div>
+          </article>
+
+          <article class="pillar-card card-why">
+            <div class="pillar-card-header">
+              <div class="pillar-badge badge-why"><span class="pillar-num">04</span><span data-i18n="pillarWhy">WHY</span></div>
+              <span class="pillar-category">Grounded Science</span>
+            </div>
+            <div class="pillar-card-body">
+              <h4 class="action-highlight" id="res-why-title">Why Generic Advice Fails</h4>
+              <p class="pillar-detail" id="res-why-desc">Standard 35kg urea triggers severe Sheath Blight and lodging in delta humidity.</p>
+            </div>
+            <div class="pillar-card-footer"><span class="tag-practical">Grounded Rationale</span></div>
+          </article>
+        </div>
+
+        <footer class="source-provenance-bar">
+          <div class="source-info-col">
+            <div class="source-item"><span class="source-label">Source:</span><strong id="res-source-name">TNAU TRRI Aduthurai</strong></div>
+            <div class="source-item"><span class="source-label">Edition:</span><span id="res-pub-date">PoP 2024-Q3</span></div>
+            <div class="source-item"><span class="source-label">Verification:</span><span class="source-verified" id="res-confidence">100% Rule Matched</span></div>
+          </div>
+          <div class="source-action-col">
+            <button class="btn btn-outline btn-sm" id="btn-open-expl-modal">View AI Reasoning Trace</button>
+          </div>
+        </footer>
+
+      </section>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 9: 3-DISTRICT DIVERGENCE DEMO                      -->
+    <!-- ======================================================== -->
+    <section class="page-view" id="view-comparison">
+      <div class="section-banner">
+        <div class="section-banner-text">
+          <span class="pill-chip">Core Hackathon Proof</span>
+          <h2>Three-District Divergence Engine</h2>
+          <p>Proof that agricultural answers cannot be generic: <strong>SAME QUESTION + DIFFERENT REGION = DIFFERENT GROUNDED ANSWER</strong>.</p>
+        </div>
+        <div class="scenario-pill-box">
+          <div class="scenario-item"><span class="sc-label">Crop:</span><strong>Paddy</strong></div>
+          <div class="scenario-item"><span class="sc-label">Season:</span><strong>Samba</strong></div>
+          <div class="scenario-item"><span class="sc-label">Stage:</span><strong>Tillering</strong></div>
+        </div>
+      </div>
+
+      <div class="comparison-toolbar">
+        <span class="tb-label">Select Scenario:</span>
+        <div class="comparison-pills">
+          <button class="comp-btn active" data-scenario="nitrogen">1. Nitrogen & Fertilizer Dosage</button>
+          <button class="comp-btn" data-scenario="blast">2. Blast Disease Control</button>
+          <button class="comp-btn" data-scenario="water">3. Irrigation & Water Stress</button>
+        </div>
+      </div>
+
+      <!-- Visual Dosage Progress Comparison -->
+      <div class="dose-comparison-card">
+        <div class="dcc-header">
+          <span class="dcc-title">Visual Grounded Dosage Contrast (kg Urea per Acre)</span>
+          <span class="dcc-caption">Generic India baseline (35 kg/acre) shown for reference</span>
+        </div>
+        <div class="dcc-bars-grid">
+          <div class="dcc-bar-item">
+            <div class="dcc-bar-label"><strong>Thanjavur (Delta Zone)</strong><span>22 kg / acre</span></div>
+            <div class="dcc-bar-track"><div class="dcc-bar-fill bar-thanjavur" style="width: 55%;"></div></div>
+            <span class="dcc-bar-note">Reduced: Delta clay retains silt nitrogen; avoids blast.</span>
+          </div>
+          <div class="dcc-bar-item">
+            <div class="dcc-bar-label"><strong>Coimbatore (Western Zone)</strong><span>28 kg / acre (4 splits)</span></div>
+            <div class="dcc-bar-track"><div class="dcc-bar-fill bar-coimbatore" style="width: 70%;"></div></div>
+            <span class="dcc-bar-note">Porous loam leaches quickly; requires micro-splits + Zinc.</span>
+          </div>
+          <div class="dcc-bar-item">
+            <div class="dcc-bar-label"><strong>Madurai (Semi-Arid Zone)</strong><span>24 kg / acre (deep briquette)</span></div>
+            <div class="dcc-bar-track"><div class="dcc-bar-fill bar-madurai" style="width: 60%;"></div></div>
+            <span class="dcc-bar-note">Deep placement required to stop 50% ammonia gas escape.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Side-by-Side Cards -->
+      <div class="tri-district-grid">
+        <div class="district-comp-card zone-thanjavur">
+          <div class="dist-card-header">
+            <span class="dist-pin">📍 Delta Zone IV</span>
+            <h3 class="dist-name">Thanjavur</h3>
+            <div class="dist-soil-spec">Cauvery Alluvial Clay • High Moisture</div>
+          </div>
+          <div class="dist-card-body">
+            <div class="dist-summary-point">
+              <span class="dp-tag">Prescribed Strategy</span>
+              <h4 class="dp-title" id="th-title">Controlled Urea with Gypsum</h4>
+              <p class="dp-text" id="th-what">Apply 22 kg Urea/acre mixed with gypsum.</p>
+            </div>
+            <div class="dist-rationale-box">
+              <span class="dr-title">Why this specific to Thanjavur?</span>
+              <p class="dr-text" id="th-why">Delta humidity exceeds 85%. Nitrogen surplus causes Sheath Blight.</p>
+            </div>
+            <div class="dist-risk-callout">
+              <span class="rc-label">❌ Failure if generic India advice used:</span>
+              <span class="rc-desc" id="th-risk">Standard 35kg urea causes 30% yield loss from lodging.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="district-comp-card zone-coimbatore">
+          <div class="dist-card-header">
+            <span class="dist-pin">📍 Western Zone II</span>
+            <h3 class="dist-name">Coimbatore</h3>
+            <div class="dist-soil-spec">Calcareous Red/Black Loam • pH 8.1</div>
+          </div>
+          <div class="dist-card-body">
+            <div class="dist-summary-point">
+              <span class="dp-tag">Prescribed Strategy</span>
+              <h4 class="dp-title" id="cb-title">Split Nitrogen + Zinc Spray</h4>
+              <p class="dp-text" id="cb-what">Apply 28 kg Urea in 4 micro-splits + 0.5% ZnSO4.</p>
+            </div>
+            <div class="dist-rationale-box">
+              <span class="dr-title">Why this specific to Coimbatore?</span>
+              <p class="dr-text" id="cb-why">High pH causes acute zinc lockup and chlorosis.</p>
+            </div>
+            <div class="dist-risk-callout">
+              <span class="rc-label">❌ Failure if generic India advice used:</span>
+              <span class="rc-desc" id="cb-risk">Urea without zinc spray produces stunted yellow tillers.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="district-comp-card zone-madurai">
+          <div class="dist-card-header">
+            <span class="dist-pin">📍 Southern Dry Zone VI</span>
+            <h3 class="dist-name">Madurai</h3>
+            <div class="dist-soil-spec">Sandy Clay Loam • High Evaporation</div>
+          </div>
+          <div class="dist-card-body">
+            <div class="dist-summary-point">
+              <span class="dp-tag">Prescribed Strategy</span>
+              <h4 class="dp-title" id="md-title">Deep Urea Briquettes</h4>
+              <p class="dp-text" id="md-what">Place Urea-DAP briquettes 7-10cm deep.</p>
+            </div>
+            <div class="dist-rationale-box">
+              <span class="dr-title">Why this specific to Madurai?</span>
+              <p class="dr-text" id="md-why">Dry heat causes 50% ammonia volatilization within 48h.</p>
+            </div>
+            <div class="dist-risk-callout">
+              <span class="rc-label">❌ Failure if generic India advice used:</span>
+              <span class="rc-desc" id="md-risk">Surface broadcasting loses over 50% nitrogen to air.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- VIEW 10: DATA REGISTRY (Section 22)                     -->
+    <!-- ======================================================== -->
+    <section class="page-view" id="view-sources">
+      <div class="section-banner">
+        <div class="section-banner-text">
+          <span class="pill-chip">Open Government Feeds</span>
+          <h2>Authoritative Public Agricultural Feeds Registry</h2>
+          <p>AgriSense AI normalizes 5 official public data streams across weather, markets, soil chemistry, and university guidelines.</p>
+        </div>
+        <div class="registry-stats">
+          <div class="stat-pill"><span class="stat-num">5</span><span class="stat-lbl">Connected Feeds</span></div>
+          <div class="stat-pill"><span class="stat-num">100%</span><span class="stat-lbl">Open Govt Data</span></div>
+        </div>
+      </div>
+
+      <div class="sources-card-grid">
+        <article class="source-detail-card">
+          <div class="source-card-top"><span class="source-badge imd-badge">IMD</span><span class="feed-status status-online">Simulated Stream</span></div>
+          <h3 class="source-title">India Meteorological Department</h3>
+          <p class="source-purpose">Gridded district rainfall forecasts, relative humidity, evapotranspiration rates, and extreme monsoon weather advisories.</p>
+          <ul class="source-meta-list">
+            <li><strong>Cadence:</strong> Every 3 Hours</li>
+            <li><strong>License:</strong> OGD India Open Data</li>
+          </ul>
+        </article>
+
+        <article class="source-detail-card">
+          <div class="source-card-top"><span class="source-badge agmarknet-badge">Agmarknet</span><span class="feed-status status-online">Daily Batch</span></div>
+          <h3 class="source-title">Agmarknet (DMI)</h3>
+          <p class="source-purpose">Agricultural Marketing Information Network delivering district regulated market mandi arrival volumes and modal prices.</p>
+          <ul class="source-meta-list">
+            <li><strong>Cadence:</strong> Daily at 18:00 IST</li>
+            <li><strong>License:</strong> Ministry of Agriculture Public Domain</li>
+          </ul>
+        </article>
+
+        <article class="source-detail-card">
+          <div class="source-card-top"><span class="source-badge shc-badge">SHC Portal</span><span class="feed-status status-cached">Cached Baseline</span></div>
+          <h3 class="source-title">Soil Health Card Portal</h3>
+          <p class="source-purpose">Geotagged macro-nutrient (N, P, K), secondary nutrient (S), and micro-nutrient (Zn, Fe) plus pH and Electrical Conductivity grids.</p>
+          <ul class="source-meta-list">
+            <li><strong>Cadence:</strong> Seasonal Survey (Bi-Annual)</li>
+            <li><strong>License:</strong> Ministry of Agriculture OGD</li>
+          </ul>
+        </article>
+
+        <article class="source-detail-card">
+          <div class="source-card-top"><span class="source-badge datagov-badge">data.gov.in</span><span class="feed-status status-online">Weekly Stream</span></div>
+          <h3 class="source-title">data.gov.in Platform</h3>
+          <p class="source-purpose">District agricultural census, reservoir water storage status (Mettur, Bhavanisagar, Vaigai), and canal discharge schedules.</p>
+          <ul class="source-meta-list">
+            <li><strong>Cadence:</strong> Weekly / Discharge Triggered</li>
+            <li><strong>License:</strong> NDSAP Open Access</li>
+          </ul>
+        </article>
+
+        <article class="source-detail-card">
+          <div class="source-card-top"><span class="source-badge sau-badge">ICAR / TNAU</span><span class="feed-status status-verified">Verified Rules</span></div>
+          <h3 class="source-title">ICAR & State Agricultural Universities</h3>
+          <p class="source-purpose">Tamil Nadu Agricultural University (TNAU) Package of Practices (PoP) and Agroclimatic Zone Research Bulletins.</p>
+          <ul class="source-meta-list">
+            <li><strong>Cadence:</strong> Seasonal Scientific Revision</li>
+            <li><strong>License:</strong> Public Extension Domain</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+    <button class="mobile-nav-btn active" data-nav="dashboard"><span class="mn-icon">🌾</span><span class="mn-text">Home</span></button>
+    <button class="mobile-nav-btn" data-nav="ai-assistant"><span class="mn-icon">💬</span><span class="mn-text">Ask AI</span></button>
+    <button class="mobile-nav-btn" data-nav="disease"><span class="mn-icon">📷</span><span class="mn-text">Scan</span></button>
+    <button class="mobile-nav-btn" data-nav="weather"><span class="mn-icon">🌦️</span><span class="mn-text">Weather</span></button>
+    <button class="mobile-nav-btn" data-nav="recommendations"><span class="mn-icon">🎯</span><span class="mn-text">Advisories</span></button>
+  </nav>
+
+  <!-- Premium Application Footer (Section 33) -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <div class="footer-brand">AgriSense <span class="brand-accent">AI</span></div>
+        <p class="footer-disclaimer">
+          "Turning agricultural data into actionable decisions." Built for hackathon evaluation and real startup validation. Localized across Tamil Nadu's agroclimatic zones.
+        </p>
+      </div>
+      <div class="footer-right">
+        <div class="footer-links">
+          <span>FastAPI</span><span>•</span>
+          <span>HTML5 / CSS3</span><span>•</span>
+          <span>Vanilla JS</span><span>•</span>
+          <span>Rule Engine Grounded</span>
+        </div>
+        <div class="footer-copy">© 2026 AgriSense AI Prototype • All open data licenses respected</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Main JavaScript Engine -->
+  <script src="script.js"></script>
+</body>
+</html>
